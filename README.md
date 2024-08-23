@@ -43,8 +43,3 @@ data_format = "json"
 tag_keys = [ "dudir" ]
 ```
 
-## Caveats
-
-This program does not check if its arguments are valid directory names. 
-This can lead to unexpected behaviour, for example `dudir --help` will
-call `du -b -d0 --help` and return with an error code.

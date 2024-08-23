@@ -31,6 +31,16 @@ func doMain(dirNames []string) error {
 
 	result := make([]DuDir, 0)
 	for _, d := range dirNames {
+		st, err := os.Stat(d)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("%s does not exist", d)
+		}
+		if err != nil {
+			return fmt.Errorf("cannot stat %s: %w", d, err)
+		}
+		if !st.IsDir() {
+			return fmt.Errorf("cannot stat %s: not a directory", d)
+		}
 		cmd := exec.Command("du", "-b", "-d0", d)
 		out, err := cmd.CombinedOutput()
 		parts := strings.Split(string(out), "\t")
