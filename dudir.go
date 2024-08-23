@@ -19,7 +19,7 @@ func main() {
 	// err := doMain([]string{"/tmp", "/etc"})
 	err := doMain(os.Args[1:])
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, err.Error())
+		_, _ = fmt.Fprintf(os.Stderr, err.Error()+"\n")
 		os.Exit(1)
 	}
 }
@@ -31,15 +31,15 @@ func doMain(dirNames []string) error {
 
 	result := make([]DuDir, 0)
 	for _, d := range dirNames {
-		st, err := os.Stat(d)
+		st, err := os.Lstat(d)
 		if os.IsNotExist(err) {
 			return fmt.Errorf("%s does not exist", d)
 		}
 		if err != nil {
 			return fmt.Errorf("cannot stat %s: %w", d, err)
 		}
-		if !st.IsDir() {
-			return fmt.Errorf("cannot stat %s: not a directory", d)
+		if !st.IsDir() && !st.Mode().IsRegular() {
+			return fmt.Errorf("cannot stat %s: not a directory and not a regular file", d)
 		}
 		cmd := exec.Command("du", "-b", "-d0", d)
 		out, err := cmd.CombinedOutput()
